@@ -3,6 +3,7 @@ import requests
 
 app = Flask(__name__)
 
+<<<<<<< HEAD
 # API Key untuk OpenWeatherMap (GANTI DENGAN API KEY MILIKMU)
 API_KEY = "0e789f2f130b02441ed2b9cd27b0201f"
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
@@ -23,6 +24,8 @@ dummyData = [
     }
 ]
 
+=======
+>>>>>>> d3b1c4dcc6a87309a305bfa2d2cc6c8dc37ec55c
 # Route untuk halaman utama
 @app.route('/')
 def index():
@@ -44,12 +47,10 @@ def submit():
         "aerator": request.form.get('aerator')
     }
 
-    # Tambahkan data ke dummyData
-    dummyData.append(data)
-
     # Kembalikan respons JSON
     return jsonify({"status": "success", "message": "Data berhasil disimpan!", "data": data})
 
+<<<<<<< HEAD
 # Route untuk mengambil data kamar
 @app.route('/data', methods=['GET'])
 def get_data():
@@ -80,3 +81,20 @@ def get_weather():
 
 if __name__ == '__main__':
     app.run(debug=True)
+=======
+# URL API eksternal
+API_URL = "http://192.168.57.87:5000/data"
+
+@app.route('/data', methods=['GET'])
+def get_data():
+    try:
+        response = requests.get(API_URL)
+        response.raise_for_status()  # Cek jika ada error pada response
+        data = response.json()
+        return jsonify(data)
+    except requests.exceptions.RequestException as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000, host='0.0.0.0')
+>>>>>>> d3b1c4dcc6a87309a305bfa2d2cc6c8dc37ec55c
