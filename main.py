@@ -50,8 +50,12 @@ adc_turbidity = ADC(Pin(26))  # Pin ADC untuk Turbiditas
 
 # Relay untuk pompa
 relay_pump = Pin(15, Pin.OUT)
+<<<<<<< HEAD:Be.py
+aerator = Pin(16, Pin.OUT)  # Tambahkan aerator sebagai relay terpisah
+=======
 # Sensor gerak (opsional)
 motion_sensor = Pin(14, Pin.IN)
+>>>>>>> d3b1c4dcc6a87309a305bfa2d2cc6c8dc37ec55c:main.py
 
 def read_sensor(sensor):
     return round(sensor.read_u16() / 65535 * 3.3, 2)
@@ -102,11 +106,52 @@ def get_data(request):
             "debit": { "value": turbidity_value, "status": get_status(turbidity_value, "debit") },
             "life": { "value": "ada", "status": "success" },
             "pompa": "on" if relay_pump.value() else "off",
-            "aerator": "on"
+            "aerator": "on" if aerator.value() else "off"
         }
         data.append(kamar_data)
 
     return json.dumps(data)
+
+@app.route('/submit', methods=['POST'])
+def submit(request):
+    try:
+        data = request.json  # Gunakan JSON sebagai format umum API
+        
+        kamar = data.get("kamar", "Kamar 1")
+        tanggal_masuk = data.get("tanggal_masuk", "12-02-2025")
+        
+        temperatur = float(data.get("temperatur", 25.0))
+        ph = float(data.get("ph", 7.0))
+        garam = float(data.get("garam", 12.0))
+        oksigen = float(data.get("oksigen", 7.5))
+        debit = float(data.get("debit", 8.0))
+        life = data.get("life", "ada")
+
+        # Ambil status pompa & aerator dari request
+        pompa_status = data.get("pompa", "off").lower()
+        aerator_status = data.get("aerator", "off").lower()
+
+        # Set status relay berdasarkan request
+        relay_pump.value(1 if pompa_status == "on" else 0)
+        aerator.value(1 if aerator_status == "on" else 0)
+
+        response_data = {
+            "kamar": kamar,
+            "tanggal_masuk": tanggal_masuk,
+            "temperatur": {"value": temperatur, "status": get_status(temperatur, 20, 30)},
+            "ph": {"value": ph, "status": get_status(ph, 6.5, 8.5)},
+            "garam": {"value": garam, "status": get_status(garam, 10, 15)},
+            "oksigen": {"value": oksigen, "status": get_status(oksigen, 7, 9)},
+            "debit": {"value": debit, "status": get_status(debit, 5, 10)},
+            "life": {"value": life, "status": "success"},
+            "pompa": "on" if relay_pump.value() else "off",
+            "aerator": "on" if aerator.value() else "off"
+        }
+
+        return json.dumps({"status": "success", "message": "Data berhasil disimpan!", "data": response_data})
+    
+    except Exception as e:
+        return json.dumps({"status": "error", "message": str(e)}), 400
 
 @app.route('/pump/<action>')
 def control_pump(request, action):
@@ -125,4 +170,8 @@ def control_aerator(request, action):
     return json.dumps({"aerator_status": "on" if aerator.value() else "off"})
 
 print("Server berjalan di http://{}:5000".format(ip_address))
+<<<<<<< HEAD:Be.py
 app.run(host=ip_address, port=5000)
+=======
+app.run(host=ip_address, port=5000)
+>>>>>>> d3b1c4dcc6a87309a305bfa2d2cc6c8dc37ec55c:main.py
