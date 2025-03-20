@@ -1,29 +1,12 @@
 from flask import Flask, render_template, request, jsonify
+import requests
 
 app = Flask(__name__)
-
-# Data dummy untuk simulasi
-dummyData = [
-    {
-        "kamar": "Kamar 1",
-        "tanggal_masuk": "12-02-2025",
-        "temperatur": {"value": 25.15, "status": "success"},
-        "ph": {"value": 7.4, "status": "warning"},
-        "garam": {"value": 14, "status": "success"},
-        "oksigen": {"value": 7.4, "status": "warning"},
-        "debit": {"value": 9, "status": "success"},
-        "life": {"value": "ada", "status": "success"},
-        "pompa": "on",
-        "aerator": "on"
-    }
-]
-
 
 # Route untuk halaman utama
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 # Route untuk menerima data dari form
 @app.route('/submit', methods=['POST'])
@@ -42,18 +25,21 @@ def submit():
         "aerator": request.form.get('aerator')
     }
 
-    # Tambahkan data ke dummyData
-    dummyData.append(data)
-
     # Kembalikan respons JSON
     return jsonify({"status": "success", "message": "Data berhasil disimpan!", "data": data})
 
+# URL API eksternal
+API_URL = "http://192.168.57.87:5000/data"
 
-# Route untuk mengambil data kamar
 @app.route('/data', methods=['GET'])
 def get_data():
-    return jsonify(dummyData)
-
+    try:
+        response = requests.get(API_URL)
+        response.raise_for_status()  # Cek jika ada error pada response
+        data = response.json()
+        return jsonify(data)
+    except requests.exceptions.RequestException as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
