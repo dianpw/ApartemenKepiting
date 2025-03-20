@@ -346,48 +346,80 @@
                   callback(false);
               }
           });
-      }
-  
-      function inisialisasiToggleSwitch() {
-          $('[data-bootstrap-switch]').each(function () {
-              const $this = $(this);
-              const defaultState = ($this.attr('data-state') || '').toLowerCase().trim() === 'on';
-              $this.prop('checked', defaultState);
-              $this.bootstrapSwitch({
-                  onText: 'ON',
-                  offText: 'OFF',
-                  onColor: 'success',
-                  offColor: 'danger',
-                  size: 'small'
-              });
-  
-              $this.on('switchChange.bootstrapSwitch', function (event, state) {
+        }
+    
+        function inisialisasiToggleSwitch() {
+            $('[data-bootstrap-switch]').each(function () {
+                const $this = $(this);
+                const defaultState = ($this.attr('data-state') || '').toLowerCase().trim() === 'on';
+                $this.prop('checked', defaultState);
+                $this.bootstrapSwitch({
+                    onText: 'ON',
+                    offText: 'OFF',
+                    onColor: 'success',
+                    offColor: 'danger',
+                    size: 'small'
+                });
+    
+                $this.on('switchChange.bootstrapSwitch', function (event, state) {
                   showPinPrompt(function (isAuthenticated) {
-                      if (!isAuthenticated) {
-                          $this.bootstrapSwitch('state', !state, true);
-                          return;
-                      }
-  
-                      const infoBox = $(`#${$this.attr('id').replace('-switch', '-info-box')}`);
-                      if (state) {
-                          infoBox.removeClass('text-bg-warning').addClass('text-bg-success');
-                      } else {
-                          infoBox.removeClass('text-bg-success').addClass('text-bg-warning');
-                      }
-  
-                      const card = infoBox.closest('.card');
-                      const semuaSuccess = card.find('.info-box').toArray().every(box => $(box).hasClass('text-bg-success'));
-                      if (semuaSuccess) {
-                          card.removeClass('card-warning').addClass('card-success');
-                      } else {
-                          card.removeClass('card-success').addClass('card-warning');
-                      }
+                    if (!isAuthenticated) {
+                      $this.bootstrapSwitch('state', !state, true);
+                      return;
+                    }
+                
+                    const infoBox = $(`#${$this.attr('id').replace('-switch', '-info-box')}`);
+                    if (state) {
+                      infoBox.removeClass('text-bg-warning').addClass('text-bg-success');
+                    } else {
+                      infoBox.removeClass('text-bg-success').addClass('text-bg-warning');
+                    }
+                
+                    const card = infoBox.closest('.card');
+                    const semuaSuccess = card.find('.info-box').toArray().every(box => $(box).hasClass('text-bg-success'));
+                    if (semuaSuccess) {
+                      card.removeClass('card-warning').addClass('card-success');
+                    } else {
+                      card.removeClass('card-success').addClass('card-warning');
+                    }
+                
+                    // Ambil nama kamar dan jenis switch dari ID
+                    const id = $this.attr('id');
+                    const kamar = id.split('-')[1];
+                    const jenis = id.split('-')[0];
+                
+                    // Kirim status switch ke server
+                    kirimStatusSwitch(kamar, jenis, state ? 'on' : 'off');
                   });
-              });
+                });
+
+            });
+        }
+    
+        inisialisasiToggleSwitch();
+
+        function kirimStatusSwitch(kamar, jenis, status) {
+          const data = {
+            kamar: kamar,
+            jenis: jenis,
+            status: status
+          };
+        
+          fetch('http://192.168.57.58:5000/submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+          .then(response => response.json())
+          .then(result => {
+            console.log('Status switch berhasil dikirim:', result);
+          })
+          .catch(error => {
+            console.error('Gagal mengirim status switch:', error);
           });
-      }
-  
-      inisialisasiToggleSwitch();
+        }
     
         // Panggil fungsi pertama kali agar tampilan langsung muncul
         updateWaktu();

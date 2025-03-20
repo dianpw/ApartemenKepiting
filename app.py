@@ -12,7 +12,15 @@ def index():
 @app.route('/submit', methods=['POST'])
 def submit():
     # Ambil data dari form
-    data = {
+    data = request.get_json()
+    kamar = data.get('kamar')
+    jenis = data.get('jenis')
+    status = data.get('status')
+
+    # Lakukan sesuatu dengan data (misalnya simpan ke database)
+    print(f"Data diterima: Kamar {kamar}, {jenis} = {status}")
+    
+    '''data = {
         "kamar": request.form.get('kamar'),
         "tanggal_masuk": request.form.get('tanggal_masuk'),
         "temperatur": {"value": float(request.form.get('temperatur')), "status": "success"},
@@ -23,7 +31,7 @@ def submit():
         "life": {"value": request.form.get('life'), "status": "success"},
         "pompa": request.form.get('pompa'),
         "aerator": request.form.get('aerator')
-    }
+    }'''
 
     # Kembalikan respons JSON
     return jsonify({"status": "success", "message": "Data berhasil disimpan!", "data": data})

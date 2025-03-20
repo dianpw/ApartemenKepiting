@@ -66,7 +66,7 @@ def get_data(request):
     # Simulasi suhu dari sensor DS18B20
     temps = simulate_temperatures()
 
-    # Baca sensor lainnya
+    # Baca sensor lainnya (hanya sekali untuk semua kamar)
     ph_value = read_sensor(adc_ph) * 3
     tds_value = read_sensor(adc_tds) * 5
     oxygen_value = read_sensor(adc_o2) * 2
