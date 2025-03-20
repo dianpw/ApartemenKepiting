@@ -6,16 +6,7 @@
     <title>Apartemen Kepiting</title>
     <!--begin::Primary Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="title" content="AdminLTE v4 | Dashboard" />
-    <meta name="author" content="ColorlibHQ" />
-    <meta
-      name="description"
-      content="AdminLTE is a Free Bootstrap 5 Admin Dashboard, 30 example pages using Vanilla JS."
-    />
-    <meta
-      name="keywords"
-      content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard"
-    />
+    <meta name="title" content="Apartemen Kepiting" />
     <!--end::Primary Meta Tags-->
     <!--begin::Fonts-->
     <link
@@ -82,265 +73,6 @@
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row" id="kamar-container"></div> <!-- Tempat untuk menampilkan kartu kamar -->
-
-            <!--end::Row
-            <div class="row">
-              <div class="col-6 pb-3">
-                <div class="card card-warning">
-                  <div class="card-header">
-                    <div class="btn-group mb-2" role="group" aria-label="Basic mixed styles example">
-                      <button type="button" class="btn btn-primary"><i class="bi bi-box2-fill"></i> Kamar 1</button>
-                      <button type="button" class="btn btn-info" id="tanggal-btn"><i class="bi bi-box-arrow-in-down"></i> Memuat...</button>
-                      <button type="button" class="btn btn-secondary" id="hari-btn"><i class="bi bi-calendar-date"></i> Menghitung...</button>
-                    </div>
-                    <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
-                      </button>
-                    </div>
-                    
-                  </div>
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-warning">
-                          <span class="info-box-icon"> <i class="bi bi-thermometer-half"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Temperatur Air</span>
-                            <span class="info-box-number">25.15 °C</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> Tidak Napsu Makan </span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>                      
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-warning">
-                          <span class="info-box-icon"> <i class="bi bi-droplet-half"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">PH Air</span>
-                            <span class="info-box-number">7.4 </span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> Stres </span>
-                          </div>
-                          
-                        </div>
-                      </div>    
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-warning">
-                          <span class="info-box-icon"> <i class="bi bi-umbrella"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Kadar Garam</span>
-                            <span class="info-box-number">14 ppt</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> Resiko Infeksi Bakteri </span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>                  
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-warning">
-                          <span class="info-box-icon"> <i class="bi bi-lungs-fill"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Kadar Oksigen</span>
-                            <span class="info-box-number">7.4 mL/L</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> Stres </span>
-                          </div>
-                          
-                        </div>
-                      </div>                     
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-warning">
-                          <span class="info-box-icon"> <i class="bi bi-tropical-storm"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Debit Air</span>
-                            <span class="info-box-number">9 cm/s</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> Kadar Oksigen Rendah </span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>                      
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success" id="pompa-info-box-1">
-                          <span class="info-box-icon"> <i class="bi bi-fan"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Pompa Air</span>
-                            <input type="checkbox" id="pompa-switch-1" data-bootstrap-switch data-state="on" checked>
-
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> 00.15.23 </span>
-                          </div>                          
-                        </div>
-                        
-                      </div>                 
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success">
-                          <span class="info-box-icon"> <i class="bi bi-activity"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Kehidupan</span>
-                            <span class="info-box-number">Ada</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> 12-02-2025 09.20 </span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>                     
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success"  id="aerator-info-box-1">
-                          <span class="info-box-icon"> <i class="bi bi-wind"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Aerator Oksigen</span>
-                            <input type="checkbox" id="aerator-switch-1" checked data-bootstrap-switch data-state="on">
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> 00.15.23 </span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>  
-                        
-                    </div>                  
-                    
-                  </div>
-                </div>
-              </div>
-              
-              <div class="col-6 pb-3">
-                <div class="card card-success">
-                  <div class="card-header">
-                    <div class="btn-group mb-2" role="group" aria-label="Basic mixed styles example">
-                      <button type="button" class="btn btn-primary"><i class="bi bi-box2-fill"></i> Kamar 2</button>
-                      <button type="button" class="btn btn-info"><i class="bi bi-box-arrow-in-down"></i> 12-02-2025</button>
-                      <button type="button" class="btn btn-secondary"><i class="bi bi-calendar-date"></i> 23 Hari</button>
-                    </div>
-                    <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
-                      </button>
-                    </div>
-                    
-                  </div>
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success">
-                          <span class="info-box-icon"> <i class="bi bi-thermometer-half"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Temperatur Air</span>
-                            <span class="info-box-number">26.15 °C</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description">Normal </span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>                      
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success">
-                          <span class="info-box-icon"> <i class="bi bi-droplet-half"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">PH Air</span>
-                            <span class="info-box-number">7.8 </span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description">Normal </span>
-                          </div>
-                          
-                        </div>
-                      </div>    
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success">
-                          <span class="info-box-icon"> <i class="bi bi-umbrella"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Kadar Garam</span>
-                            <span class="info-box-number">18 ppt</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description">Normal</span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>                  
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success">
-                          <span class="info-box-icon"> <i class="bi bi-lungs-fill"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Kadar Oksigen</span>
-                            <span class="info-box-number">7 mL/L</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description">Normal </span>
-                          </div>
-                          
-                        </div>
-                      </div>                     
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success">
-                          <span class="info-box-icon"> <i class="bi bi-tropical-storm"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Debit Air</span>
-                            <span class="info-box-number">18 cm/s</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description">Normal</span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>                      
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success">
-                          <span class="info-box-icon"> <i class="bi bi-fan"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Pompa Air</span>
-                            <span class="info-box-number">ON</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> 00.15.23 </span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>                 
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success">
-                          <span class="info-box-icon"> <i class="bi bi-activity"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Kehidupan</span>
-                            <span class="info-box-number">Ada</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> 12-02-2025 09.20 </span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>                     
-                      <div class="col-md-6 col-sm-6 col-12">
-                        <div class="info-box text-bg-success">
-                          <span class="info-box-icon"> <i class="bi bi-wind"></i> </span>
-                          <div class="info-box-content">
-                            <span class="info-box-text">Aerator Oksigen</span>
-                            <span class="info-box-number">ON</span>
-                            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                            <span class="progress-description"> 00.15.23 </span>
-                          </div>
-                          
-                        </div>
-                        
-                      </div>  
-                        
-                    </div>                  
-                    
-                  </div>
-                </div>
-              </div>
-
-            </div>
-            end::Row-->
             <!-- /.row (main row) -->
           </div>
           <!--end::Container-->
@@ -577,11 +309,21 @@
         }
     
         // Ambil data dari API atau gunakan data dummy jika API gagal
-        $.getJSON("http://192.168.56.127:5000/data", function (data) {
-          tampilkanKamar(data);
-        }).fail(function () {
-          tampilkanKamar(dummyData);
-        });
+        const apiUrl = "http://192.168.56.127:5000/data";
+    
+        // Fungsi untuk mengambil data
+        function ambilData() {
+          console.log("Mengambil data dari API..."); // Log sebelum request
+
+          $.getJSON(apiUrl, function (data) {
+              console.log("Data berhasil diambil dari API:", data); // Log jika sukses
+              tampilkanKamar(data);
+          }).fail(function (jqXHR, textStatus, errorThrown) {
+              console.warn("Gagal mengambil data dari API. Menggunakan data dummy."); // Log jika gagal
+              console.warn("Error:", textStatus, errorThrown); // Menampilkan pesan error
+              tampilkanKamar(dummyData);
+          });
+        }
     
         // Fungsi untuk menampilkan kamar ke dalam container
         function tampilkanKamar(data) {
@@ -613,11 +355,14 @@
           $('#jam').text(formattedTime); // Jam dalam format 24 jam
         }
     
-        // Memperbarui waktu setiap 1 detik (1000 milidetik)
-        setInterval(updateWaktu, 1000);
-    
         // Panggil fungsi pertama kali agar tampilan langsung muncul
         updateWaktu();
+        // Panggil fungsi ambilData pertama kali
+        ambilData();
+        // Memperbarui waktu setiap 1 detik (1000 milidetik)
+        setInterval(updateWaktu, 1000);
+        // Jalankan ambilData setiap 2 detik
+        setInterval(ambilData, 1000*60*10); // Ambil data setiap 10 menit
       });
     </script>
   </body>
