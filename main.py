@@ -56,10 +56,22 @@ motion_sensor = Pin(14, Pin.IN)
 def read_sensor(sensor):
     return round(sensor.read_u16() / 65535 * 3.3, 2)
 
-def get_status(value, low, high):
-    if low <= value <= high:
-        return "success"
-    return "warning"
+def get_status(value, sensor_type):
+    # Aturan status berdasarkan jenis sensor
+    if sensor_type == "debit":
+        if value > 30 or value < 10:
+            return "warning"
+    elif sensor_type == "ph":
+        if value > 8.5 or value < 7.5:
+            return "warning"
+    elif sensor_type == "temperatur":
+        if value > 30 or value < 26:
+            return "warning"
+    elif sensor_type == "garam":
+        if value > 25 or value < 15:
+            return "warning"
+    # Default status success jika dalam rentang
+    return "success"
 
 @app.route('/data')
 def get_data(request):
@@ -67,10 +79,15 @@ def get_data(request):
     temps = simulate_temperatures()
 
     # Baca sensor lainnya (hanya sekali untuk semua kamar)
-    ph_value = read_sensor(adc_ph) * 3
+    '''ph_value = read_sensor(adc_ph) * 3
     tds_value = read_sensor(adc_tds) * 5
     oxygen_value = read_sensor(adc_o2) * 2
     turbidity_value = read_sensor(adc_turbidity) * 4
+    '''
+    ph_value = round(random.uniform(7.5, 8.5), 2)  # Rentang pH real
+    tds_value = round(random.uniform(15, 25), 2)  # Rentang garam real
+    oxygen_value = round(random.uniform(5, 7), 2)  # Rentang oksigen real
+    turbidity_value = round(random.uniform(5, 10), 2)  # Rentang turbiditas real
 
     # Format data untuk setiap kamar
     data = []
@@ -78,11 +95,11 @@ def get_data(request):
         kamar_data = {
             "kamar": f"Kamar {i + 1}",  # Nama kamar sesuai indeks
             "tanggal_masuk": random_date(),
-            "temperatur": { "value": temp_value, "status": get_status(temp_value, 20, 30) },
-            "ph": { "value": ph_value, "status": get_status(ph_value, 6.5, 8.5) },
-            "garam": { "value": tds_value, "status": get_status(tds_value, 10, 15) },
-            "oksigen": { "value": oxygen_value, "status": get_status(oxygen_value, 7, 9) },
-            "debit": { "value": turbidity_value, "status": get_status(turbidity_value, 5, 10) },
+            "temperatur": { "value": temp_value, "status": get_status(temp_value, "temperatur") },
+            "ph": { "value": ph_value, "status": get_status(ph_value, "ph") },
+            "garam": { "value": tds_value, "status": get_status(tds_value, "garam") },
+            "oksigen": { "value": oxygen_value, "status": get_status(oxygen_value, "oksigen") },
+            "debit": { "value": turbidity_value, "status": get_status(turbidity_value, "debit") },
             "life": { "value": "ada", "status": "success" },
             "pompa": "on" if relay_pump.value() else "off",
             "aerator": "on"
@@ -98,6 +115,14 @@ def control_pump(request, action):
     elif action == 'off':
         relay_pump.value(0)
     return json.dumps({"pump_status": "on" if relay_pump.value() else "off"})
+
+@app.route('/aerator/<action>')
+def control_aerator(request, action):
+    if action == 'on':
+        aerator.value(1)
+    elif action == 'off':
+        aerator.value(0)
+    return json.dumps({"aerator_status": "on" if aerator.value() else "off"})
 
 print("Server berjalan di http://{}:5000".format(ip_address))
 app.run(host=ip_address, port=5000)
