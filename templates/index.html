@@ -115,9 +115,10 @@
     <!-- OPTIONAL SCRIPTS -->
     <script>
       $(document).ready(function () {
+        // Fungsi ini akan dijalankan ketika dokumen HTML selesai dimuat
         // Ambil data dari API atau gunakan data dummy jika API gagal
-        const apiUrl = "http://192.168.57.58:5000/data";
-        
+        const apiUrl = "http://192.168.57.58:5000/data"; // URL API untuk mengambil data
+    
         // Simulasi Data JSON Dummy (Jika API tidak tersedia)
         const dummyData = [
           {
@@ -144,26 +145,30 @@
               "pompa": "off",
               "aerator": "on"
           }
-      ];
-
-    
+        ];
+      
         // Fungsi untuk menghitung jumlah hari sejak tanggal masuk
+        /**
+        * Menghitung selisih hari antara tanggal masuk dan tanggal sekarang.
+        * @param {string} tanggalMasuk - Tanggal masuk dalam format "DD-MM-YYYY".
+        * @returns {number} Jumlah hari sejak tanggal masuk.
+        */
         function hitungHari(tanggalMasuk) {
           const tglMasuk = new Date(tanggalMasuk.split('-').reverse().join('-'));
           const tglSekarang = new Date();
           const selisihHari = Math.floor((tglSekarang - tglMasuk) / (1000 * 60 * 60 * 24));
           return selisihHari > 0 ? selisihHari : 0;
         }
-    
+      
         // Fungsi untuk membuat elemen kartu kamar
         function buatKamar(data) {
           // Periksa apakah semua info-box memiliki status success
           const semuaSuccess = [data.temperatur, data.ph, data.garam, data.oksigen, data.debit, data.life]
-              .every(item => item.status === "success");
-
+              .every(item => item.status === "success"); // Cek apakah semua status adalah "success"
+    
           // Tentukan kelas kartu berdasarkan status info-box
-          const cardClass = semuaSuccess ? "card-success" : "card-warning";
-
+          const cardClass = semuaSuccess ? "card-success" : "card-warning"; // Tentukan kelas CSS berdasarkan status
+    
           return `
               <div class="col-md-6 pb-3">
                   <div class="card ${cardClass}" id="card-${data.kamar.replace(/\s/g, '')}">
@@ -182,20 +187,19 @@
                               ${buatInfoBox("bi-lungs-fill", "Kadar Oksigen", data.oksigen, "Stres", "mg/L")}
                               ${buatInfoBox("bi-tropical-storm", "Debit Air", data.debit, "Kadar Oksigen Rendah", "L/s")}
                               ${buatInfoBox("bi-activity", "Kehidupan", data.life, "12-02-2025 09.20", "")}
-                              ${buatSwitch("bi-fan", "Pompa Air", `pompa-${data.kamar.replace(/\s/g, '')}`, data.pompa)}
-                              ${buatSwitch("bi-wind", "Aerator Oksigen", `aerator-${data.kamar.replace(/\s/g, '')}`, data.aerator)}
+                              ${buatSwitch("bi-fan", "Pompa Air", `pompa-${data.kamar.replace(/\s/g, '')}`, data.pompa === 'on' ? 'checked' : '')}
+                              ${buatSwitch("bi-wind", "Aerator Oksigen", `aerator-${data.kamar.replace(/\s/g, '')}`, data.aerator === 'on' ? 'checked' : '')}
                           </div>
                       </div>
                   </div>
               </div>`;
         }
-
-      
+        
         // Fungsi untuk membuat info-box
         function buatInfoBox(icon, title, data, description, unit) {
-          const statusClass = data.status === "success" ? "text-bg-success" : "text-bg-warning";
+          const statusClass = data.status === "success" ? "text-bg-success" : "text-bg-warning"; // Tentukan kelas CSS berdasarkan status
           const valueDisplay = (typeof data.value === "string") ? data.value.toUpperCase() : data.value; // Ubah ke uppercase jika string
-      
+        
           return `
             <div class="col-md-6 col-sm-6 col-12">
                 <div class="info-box ${statusClass}">
@@ -209,10 +213,10 @@
                 </div>
             </div>`;
         }
-      
+        
         // Fungsi untuk membuat switch kontrol
         function buatSwitch(icon, title, id, state) {
-          const isChecked = state === "on" ? "checked" : "";
+          const isChecked = state === "on" ? "checked" : ""; // Tentukan status checked berdasarkan state
           return `
           <div class="col-md-6 col-sm-6 col-12">
             <div class="info-box text-bg-${state === "on" ? "success" : "warning"}" id="${id}-info-box">
@@ -225,13 +229,13 @@
             </div>
           </div>`;
         }
-    
+      
         // Fungsi untuk inisialisasi toggle switch
         function inisialisasiToggleSwitch() {
           $('[data-bootstrap-switch]').each(function () {
             const $this = $(this);
-            const defaultState = ($this.attr('data-state') || '').toLowerCase().trim() === 'on';
-            $this.prop('checked', defaultState);
+            const defaultState = ($this.attr('data-state') || '').toLowerCase().trim() === 'on'; // Ambil status default dari atribut data-state
+            $this.prop('checked', defaultState); // Set status checked
             $this.bootstrapSwitch({
               onText: 'ON',
               offText: 'OFF',
@@ -239,20 +243,20 @@
               offColor: 'danger',
               size: 'small'
             });
-    
+      
             // Event listener untuk toggle switch
             $this.on('switchChange.bootstrapSwitch', function (event, state) {
               const infoBox = $(`#${$this.attr('id').replace('-switch', '-info-box')}`);
               if (state) {
-                infoBox.removeClass('text-bg-warning').addClass('text-bg-success');
+                infoBox.removeClass('text-bg-warning').addClass('text-bg-success'); // Ubah kelas CSS jika switch ON
               } else {
-                infoBox.removeClass('text-bg-success').addClass('text-bg-warning');
+                infoBox.removeClass('text-bg-success').addClass('text-bg-warning'); // Ubah kelas CSS jika switch OFF
               }
-    
+      
               // Periksa status semua info-box di dalam card
               const card = infoBox.closest('.card');
               const semuaSuccess = card.find('.info-box').toArray().every(box => $(box).hasClass('text-bg-success'));
-    
+      
               // Ubah kelas card berdasarkan status info-box
               if (semuaSuccess) {
                 card.removeClass('card-warning').addClass('card-success');
@@ -262,15 +266,17 @@
             });
           });
         }
-    
-    
+      
         // Fungsi untuk mengambil data
         function ambilData() {
           console.log("Mengambil data dari API..."); // Log sebelum request
-
+    
           $.getJSON(apiUrl, function (data) {
               console.log("Data berhasil diambil dari API:", data); // Log jika sukses
-              tampilkanKamar(data);
+              if (JSON.stringify(data) !== JSON.stringify(previousData)) { // Bandingkan data baru dan lama
+                  previousData = data;
+                  tampilkanKamar(data);
+              }
           }).fail(function (jqXHR, textStatus, errorThrown) {
               console.warn("Gagal mengambil data dari API. Menggunakan data dummy."); // Log jika gagal
               console.warn("Error:", textStatus, errorThrown); // Menampilkan pesan error
@@ -278,36 +284,49 @@
           });
         }
     
+        // Panggil fungsi ambilData pertama kali
+        ambilData();
+    
+        // Jalankan ambilData setiap 2 detik
+        setInterval(ambilData, 1000*60*10); // Ambil data setiap 10 menit
+      
         // Fungsi untuk menampilkan kamar ke dalam container
         function tampilkanKamar(data) {
           const container = $("#kamar-container");
           container.empty(); // Kosongkan container
-          data.slice(0, 10).forEach(item => container.append(buatKamar(item)));
-    
+          data.slice(0, 10).forEach(item => container.append(buatKamar(item))); // Tambahkan elemen kamar ke container
+      
           // Inisialisasi Bootstrap Switch setelah elemen dimasukkan ke DOM
           inisialisasiToggleSwitch();
         }
-    
+      
         // Fungsi untuk memperbarui tanggal dan waktu
         function updateWaktu() {
           const date = new Date();
-    
+      
           // Format nama hari dan tanggal dalam bahasa Indonesia
           const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
           const formattedDate = date.toLocaleDateString('id-ID', options);
-    
+      
           // Format jam dengan angka dua digit (24 jam format)
           const formattedTime = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-    
+      
           // Memisahkan nama hari dari tanggal lengkap
           const [hari, tanggal] = formattedDate.split(', ');
-    
+      
           // Perbarui elemen DOM
           $('#hari').text(hari); // Nama hari
           $('#tanggal').text(tanggal); // Tanggal lengkap
           $('#jam').text(formattedTime); // Jam dalam format 24 jam
         }
-
+    
+        // Panggil fungsi pertama kali agar tampilan langsung muncul
+        updateWaktu();
+    
+        // Memperbarui waktu setiap 1 detik (1000 milidetik)
+        setInterval(updateWaktu, 1000);
+    
+        // Fungsi untuk menampilkan prompt PIN
         function showPinPrompt(callback) {
           const modal = $(`
               <div class="modal" tabindex="-1" role="dialog">
@@ -318,7 +337,6 @@
                               <button type="button" class="close ml-auto position-absolute" style="right: 10px; top: 10px;" data-dismiss="modal" aria-label="Close">
                                   <span aria-hidden="true">&times;</span>
                               </button>
-
                           </div>
                           <div class="modal-body">
                               <input type="password" id="pin-input" class="form-control" placeholder="Masukkan PIN">
@@ -341,14 +359,15 @@
               modal.remove();
               
               if (pin === "1234") {
-                  callback(true);
+                  callback(true); // Panggil callback dengan true jika PIN benar
               } else {
                   alert("PIN salah!");
-                  callback(false);
+                  callback(false); // Panggil callback dengan false jika PIN salah
               }
           });
         }
-    
+      
+        // Fungsi untuk inisialisasi toggle switch dengan validasi PIN
         function inisialisasiToggleSwitch() {
             $('[data-bootstrap-switch]').each(function () {
                 const $this = $(this);
@@ -361,11 +380,11 @@
                     offColor: 'danger',
                     size: 'small'
                 });
-    
+      
                 $this.on('switchChange.bootstrapSwitch', function (event, state) {
                   showPinPrompt(function (isAuthenticated) {
                     if (!isAuthenticated) {
-                      $this.bootstrapSwitch('state', !state, true);
+                      $this.bootstrapSwitch('state', !state, true); // Kembalikan switch ke state sebelumnya jika PIN salah
                       return;
                     }
                 
@@ -393,11 +412,12 @@
                     kirimStatusSwitch(kamar, jenis, state ? 'on' : 'off');
                   });
                 });
-
             });
         }
+      
+        inisialisasiToggleSwitch();
     
-
+        // Fungsi untuk mengirim status switch ke server
         function kirimStatusSwitch(kamar, jenis, status) {
           const data = {
             kamar: kamar,
@@ -420,16 +440,6 @@
             console.error('Gagal mengirim status switch:', error);
           });
         }
-    
-        inisialisasiToggleSwitch();
-        // Panggil fungsi pertama kali agar tampilan langsung muncul
-        updateWaktu();
-        // Panggil fungsi ambilData pertama kali
-        ambilData();
-        // Memperbarui waktu setiap 1 detik (1000 milidetik)
-        setInterval(updateWaktu, 1000);
-        // Jalankan ambilData setiap 2 detik
-        setInterval(ambilData, 1000*60*10); // Ambil data setiap 10 menit
       });
     </script>
   </body>
