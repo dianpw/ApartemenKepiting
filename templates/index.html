@@ -140,54 +140,6 @@
               "life": { "value": "ada", "status": "success" },
               "pompa": "off",
               "aerator": "on"
-          },
-          {
-              "kamar": "Kamar 3",
-              "tanggal_masuk": "05-01-2025",
-              "temperatur": { "value": 24.8, "status": "success" },
-              "ph": { "value": 7.6, "status": "warning" },
-              "garam": { "value": 15, "status": "success" },
-              "oksigen": { "value": 7.0, "status": "warning" },
-              "debit": { "value": 10, "status": "success" },
-              "life": { "value": "ada", "status": "success" },
-              "pompa": "on",
-              "aerator": "off"
-          },
-          {
-              "kamar": "Kamar 4",
-              "tanggal_masuk": "20-02-2025",
-              "temperatur": { "value": 27.0, "status": "warning" },
-              "ph": { "value": 7.1, "status": "success" },
-              "garam": { "value": 13, "status": "warning" },
-              "oksigen": { "value": 7.8, "status": "success" },
-              "debit": { "value": 7, "status": "warning" },
-              "life": { "value": "ada", "status": "success" },
-              "pompa": "off",
-              "aerator": "off"
-          },
-          {
-              "kamar": "Kamar 5",
-              "tanggal_masuk": "15-03-2025",
-              "temperatur": { "value": 25.0, "status": "success" },
-              "ph": { "value": 7.5, "status": "warning" },
-              "garam": { "value": 16, "status": "success" },
-              "oksigen": { "value": 7.2, "status": "warning" },
-              "debit": { "value": 9, "status": "success" },
-              "life": { "value": "ada", "status": "success" },
-              "pompa": "on",
-              "aerator": "on"
-          },
-          {
-              "kamar": "Kamar 6",
-              "tanggal_masuk": "08-03-2025",
-              "temperatur": { "value": 26.8, "status": "warning" },
-              "ph": { "value": 7.3, "status": "success" },
-              "garam": { "value": 11, "status": "warning" },
-              "oksigen": { "value": 7.6, "status": "success" },
-              "debit": { "value": 8, "status": "warning" },
-              "life": { "value": "ada", "status": "success" },
-              "pompa": "off",
-              "aerator": "on"
           }
       ];
 
@@ -309,7 +261,7 @@
         }
     
         // Ambil data dari API atau gunakan data dummy jika API gagal
-        const apiUrl = "http://127.0.0.1:5000/data";
+        const apiUrl = "http://192.168.57.58:5000/data";
     
         // Fungsi untuk mengambil data
         function ambilData() {
@@ -354,6 +306,88 @@
           $('#tanggal').text(tanggal); // Tanggal lengkap
           $('#jam').text(formattedTime); // Jam dalam format 24 jam
         }
+
+        function showPinPrompt(callback) {
+          const modal = $(`
+              <div class="modal" tabindex="-1" role="dialog">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title">Masukkan PIN</h5>
+                              <button type="button" class="close ml-auto position-absolute" style="right: 10px; top: 10px;" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                              </button>
+
+                          </div>
+                          <div class="modal-body">
+                              <input type="password" id="pin-input" class="form-control" placeholder="Masukkan PIN">
+                          </div>
+                          <div class="modal-footer">
+                              <button type="button" class="btn btn-primary" id="confirm-pin">OK</button>
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          `);
+          
+          $('body').append(modal);
+          modal.modal('show');
+          
+          modal.find('#confirm-pin').click(function () {
+              const pin = modal.find('#pin-input').val();
+              modal.modal('hide');
+              modal.remove();
+              
+              if (pin === "1234") {
+                  callback(true);
+              } else {
+                  alert("PIN salah!");
+                  callback(false);
+              }
+          });
+      }
+  
+      function inisialisasiToggleSwitch() {
+          $('[data-bootstrap-switch]').each(function () {
+              const $this = $(this);
+              const defaultState = ($this.attr('data-state') || '').toLowerCase().trim() === 'on';
+              $this.prop('checked', defaultState);
+              $this.bootstrapSwitch({
+                  onText: 'ON',
+                  offText: 'OFF',
+                  onColor: 'success',
+                  offColor: 'danger',
+                  size: 'small'
+              });
+  
+              $this.on('switchChange.bootstrapSwitch', function (event, state) {
+                  showPinPrompt(function (isAuthenticated) {
+                      if (!isAuthenticated) {
+                          $this.bootstrapSwitch('state', !state, true);
+                          return;
+                      }
+  
+                      const infoBox = $(`#${$this.attr('id').replace('-switch', '-info-box')}`);
+                      if (state) {
+                          infoBox.removeClass('text-bg-warning').addClass('text-bg-success');
+                      } else {
+                          infoBox.removeClass('text-bg-success').addClass('text-bg-warning');
+                      }
+  
+                      const card = infoBox.closest('.card');
+                      const semuaSuccess = card.find('.info-box').toArray().every(box => $(box).hasClass('text-bg-success'));
+                      if (semuaSuccess) {
+                          card.removeClass('card-warning').addClass('card-success');
+                      } else {
+                          card.removeClass('card-success').addClass('card-warning');
+                      }
+                  });
+              });
+          });
+      }
+  
+      inisialisasiToggleSwitch();
     
         // Panggil fungsi pertama kali agar tampilan langsung muncul
         updateWaktu();
