@@ -1,157 +1,137 @@
 from microdot import Microdot, Response
 from machine import Pin, ADC
-import onewire, ds18x20
 import network
 import time
 import json
 import random
 
-# Setup koneksi WiFi
+# ---- Setup WiFi ----
 ssid = "BOE-"  # Ganti dengan SSID WiFi Anda
-password = ""  # Ganti dengan password WiFi Anda
+password = ""   # Ganti dengan password WiFi Anda
 
 wifi = network.WLAN(network.STA_IF)
 wifi.active(True)
 wifi.connect(ssid, password)
 
 print("Menghubungkan ke WiFi...")
+timeout = 10  # Waktu maksimal menunggu koneksi (detik)
+start_time = time.time()
+
 while not wifi.isconnected():
+    if time.time() - start_time > timeout:
+        print("Gagal terhubung ke WiFi. Periksa SSID/Password!")
+        break
     time.sleep(1)
     print("Menghubungkan...")
 
-print("Terhubung ke WiFi")
-ip_address = wifi.ifconfig()[0]
+if wifi.isconnected():
+    print("Terhubung ke WiFi")
+    ip_address = wifi.ifconfig()[0]
+else:
+    ip_address = "0.0.0.0"
+
 print("IP Address:", ip_address)
 
-# Inisialisasi Microdot
+# ---- Inisialisasi Microdot ----
 app = Microdot()
 Response.default_content_type = 'application/json'
 
-# Simulasi sensor DS18B20 dengan 6 data suhu
+# ---- Simulasi Sensor DS18B20 ----
 sensors = ["Sensor_1", "Sensor_2", "Sensor_3", "Sensor_4", "Sensor_5", "Sensor_6"]
 
 def simulate_temperatures():
-    return [round(random.uniform(20, 30), 2) for _ in sensors]
+    return [round(random.uniform(26, 30), 2) for _ in sensors]
 
 def random_date():
-    month = random.randint(1, 3)
-    if month == 3:
-        day = random.randint(1, 15)  # Hanya sampai pertengahan Maret
-    else:
-        day = random.randint(1, 28)  # Untuk Januari dan Februari
     year = 2025
-    return "{:02d}-{:02d}-{}".format(day, month, year)
+    month = random.randint(1, 3)
+    day = random.randint(1, 15 if month == 3 else 28)
+    return f"{day:02d}-{month:02d}-{year}"
 
-# Inisialisasi sensor lainnya (1 sensor per jenis)
-adc_ph = ADC(Pin(26))  # Pin ADC untuk pH
-adc_tds = ADC(Pin(27))  # Pin ADC untuk TDS
-adc_o2 = ADC(Pin(28))  # Pin ADC untuk Oksigen
-adc_turbidity = ADC(Pin(26))  # Pin ADC untuk Turbiditas
+# ---- Inisialisasi Sensor ----
+adc_ph = ADC(Pin(26))         # pH Sensor
+adc_tds = ADC(Pin(27))        # TDS Sensor
+adc_o2 = ADC(Pin(28))         # Oksigen Sensor
+adc_turbidity = ADC(Pin(29))  # Turbidity Sensor
 
-# Relay untuk pompa
+# ---- Relay & Sensor Gerak ----
 relay_pump = Pin(15, Pin.OUT)
-<<<<<<< HEAD:Be.py
-aerator = Pin(16, Pin.OUT)  # Tambahkan aerator sebagai relay terpisah
-=======
-# Sensor gerak (opsional)
+aerator = Pin(16, Pin.OUT)
 motion_sensor = Pin(14, Pin.IN)
->>>>>>> d3b1c4dcc6a87309a305bfa2d2cc6c8dc37ec55c:main.py
 
-def read_sensor(sensor):
-    return round(sensor.read_u16() / 65535 * 3.3, 2)
-
+# ---- Fungsi Status Sensor ----
 def get_status(value, sensor_type):
-    # Aturan status berdasarkan jenis sensor
-    if sensor_type == "debit":
-        if value > 30 or value < 10:
-            return "warning"
-    elif sensor_type == "ph":
-        if value > 8.5 or value < 7.5:
-            return "warning"
-    elif sensor_type == "temperatur":
-        if value > 30 or value < 26:
-            return "warning"
-    elif sensor_type == "garam":
-        if value > 25 or value < 15:
-            return "warning"
-    # Default status success jika dalam rentang
-    return "success"
+    status_ranges = {
+        "temperatur": (26, 30),
+        "ph": (7.5, 8.5),
+        "garam": (15, 25),
+        "debit": (10, 30),
+        "oksigen": (5, 7)
+    }
+
+    if sensor_type in status_ranges:
+        low, high = status_ranges[sensor_type]
+        
+        if value < low:
+            return {
+                "status": "warning",
+                "message": {
+                    "temperatur": "Tidak Nafsu Makan",
+                    "ph": "Kepiting Stres",
+                    "garam": "Resiko Infeksi Bakteri",
+                    "debit": "Kepiting Kurang Oksigen",
+                    "oksigen": "Kepiting Kurang Oksigen"
+                }[sensor_type]
+            }
+        elif value > high:
+            return {
+                "status": "warning",
+                "message": {
+                    "temperatur": "Kepiting Stres",
+                    "ph": "Cangkang Rusak",
+                    "garam": "Kepiting Dehidrasi",
+                    "debit": "Kepiting Stres",
+                    "oksigen": "Kepiting Stres"
+                }[sensor_type]
+            }
+
+    return {"status": "success", "message": "Kondisi Normal"}
 
 @app.route('/data')
 def get_data(request):
     # Simulasi suhu dari sensor DS18B20
     temps = simulate_temperatures()
 
-    # Baca sensor lainnya (hanya sekali untuk semua kamar)
-    '''ph_value = read_sensor(adc_ph) * 3
-    tds_value = read_sensor(adc_tds) * 5
-    oxygen_value = read_sensor(adc_o2) * 2
-    turbidity_value = read_sensor(adc_turbidity) * 4
-    '''
-    ph_value = round(random.uniform(7.5, 8.5), 2)  # Rentang pH real
-    tds_value = round(random.uniform(15, 25), 2)  # Rentang garam real
-    oxygen_value = round(random.uniform(5, 7), 2)  # Rentang oksigen real
-    turbidity_value = round(random.uniform(5, 10), 2)  # Rentang turbiditas real
+    # Status pompa dan aerator
+    pump_status = relay_pump.value() == 1
+    aerator_status = aerator.value() == 1
+
+    # Simulasi pembacaan sensor lainnya
+    ph_value = round(random.uniform(7.5, 8.5), 2)
+    tds_value = round(random.uniform(15, 25), 2)
+    
+    # Jika pompa mati, debit dan oksigen di bawah range
+    turbidity_value = round(random.uniform(5, 10), 2) if pump_status else round(random.uniform(3, 5), 2)
+    oxygen_value = round(random.uniform(5, 7), 2) if pump_status and aerator_status else round(random.uniform(3, 5), 2)
 
     # Format data untuk setiap kamar
     data = []
     for i, temp_value in enumerate(temps):
         kamar_data = {
-            "kamar": f"Kamar {i + 1}",  # Nama kamar sesuai indeks
+            "kamar": f"Kamar {i + 1}",
             "tanggal_masuk": random_date(),
-            "temperatur": { "value": temp_value, "status": get_status(temp_value, "temperatur") },
-            "ph": { "value": ph_value, "status": get_status(ph_value, "ph") },
-            "garam": { "value": tds_value, "status": get_status(tds_value, "garam") },
-            "oksigen": { "value": oxygen_value, "status": get_status(oxygen_value, "oksigen") },
-            "debit": { "value": turbidity_value, "status": get_status(turbidity_value, "debit") },
+            "temperatur": { "value": temp_value, **get_status(temp_value, "temperatur") },
+            "ph": { "value": ph_value, **get_status(ph_value, "ph") },
+            "garam": { "value": tds_value, **get_status(tds_value, "garam") },
+            "oksigen": { "value": oxygen_value, **get_status(oxygen_value, "oksigen") },
+            "debit": { "value": turbidity_value, **get_status(turbidity_value, "debit") },
             "life": { "value": "ada", "status": "success" },
-            "pompa": "on" if relay_pump.value() else "off",
-            "aerator": "on" if aerator.value() else "off"
+            "pompa": "on" if pump_status else "off",
+            "aerator": "on" if aerator_status else "off"
         }
         data.append(kamar_data)
 
     return json.dumps(data)
-
-@app.route('/submit', methods=['POST'])
-def submit(request):
-    try:
-        data = request.json  # Gunakan JSON sebagai format umum API
-        
-        kamar = data.get("kamar", "Kamar 1")
-        tanggal_masuk = data.get("tanggal_masuk", "12-02-2025")
-        
-        temperatur = float(data.get("temperatur", 25.0))
-        ph = float(data.get("ph", 7.0))
-        garam = float(data.get("garam", 12.0))
-        oksigen = float(data.get("oksigen", 7.5))
-        debit = float(data.get("debit", 8.0))
-        life = data.get("life", "ada")
-
-        # Ambil status pompa & aerator dari request
-        pompa_status = data.get("pompa", "off").lower()
-        aerator_status = data.get("aerator", "off").lower()
-
-        # Set status relay berdasarkan request
-        relay_pump.value(1 if pompa_status == "on" else 0)
-        aerator.value(1 if aerator_status == "on" else 0)
-
-        response_data = {
-            "kamar": kamar,
-            "tanggal_masuk": tanggal_masuk,
-            "temperatur": {"value": temperatur, "status": get_status(temperatur, 20, 30)},
-            "ph": {"value": ph, "status": get_status(ph, 6.5, 8.5)},
-            "garam": {"value": garam, "status": get_status(garam, 10, 15)},
-            "oksigen": {"value": oksigen, "status": get_status(oksigen, 7, 9)},
-            "debit": {"value": debit, "status": get_status(debit, 5, 10)},
-            "life": {"value": life, "status": "success"},
-            "pompa": "on" if relay_pump.value() else "off",
-            "aerator": "on" if aerator.value() else "off"
-        }
-
-        return json.dumps({"status": "success", "message": "Data berhasil disimpan!", "data": response_data})
-    
-    except Exception as e:
-        return json.dumps({"status": "error", "message": str(e)}), 400
 
 @app.route('/pump/<action>')
 def control_pump(request, action):
@@ -169,9 +149,9 @@ def control_aerator(request, action):
         aerator.value(0)
     return json.dumps({"aerator_status": "on" if aerator.value() else "off"})
 
-print("Server berjalan di http://{}:5000".format(ip_address))
-<<<<<<< HEAD:Be.py
-app.run(host=ip_address, port=5000)
-=======
-app.run(host=ip_address, port=5000)
->>>>>>> d3b1c4dcc6a87309a305bfa2d2cc6c8dc37ec55c:main.py
+# ---- Menjalankan Server ----
+if ip_address != "0.0.0.0":
+    print(f"Server berjalan di http://{ip_address}:80")
+    app.run(host='0.0.0.0', port=80)  # Gunakan port 80
+else:
+    print("Server tidak bisa dijalankan karena gagal terhubung ke WiFi")

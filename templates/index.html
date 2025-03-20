@@ -115,6 +115,9 @@
     <!-- OPTIONAL SCRIPTS -->
     <script>
       $(document).ready(function () {
+        // Ambil data dari API atau gunakan data dummy jika API gagal
+        const apiUrl = "http://192.168.57.58:5000/data";
+        
         // Simulasi Data JSON Dummy (Jika API tidak tersedia)
         const dummyData = [
           {
@@ -260,8 +263,6 @@
           });
         }
     
-        // Ambil data dari API atau gunakan data dummy jika API gagal
-        const apiUrl = "http://192.168.57.58:5000/data";
     
         // Fungsi untuk mengambil data
         function ambilData() {
@@ -396,7 +397,6 @@
             });
         }
     
-        inisialisasiToggleSwitch();
 
         function kirimStatusSwitch(kamar, jenis, status) {
           const data = {
@@ -421,6 +421,7 @@
           });
         }
     
+        inisialisasiToggleSwitch();
         // Panggil fungsi pertama kali agar tampilan langsung muncul
         updateWaktu();
         // Panggil fungsi ambilData pertama kali
